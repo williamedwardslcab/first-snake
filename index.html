@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Змейка</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="snakeCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("snakeCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const blockSize = 20;
+        let snake = [{ x: 0, y: 0 }];
+        let food = { x: 0, y: 0 };
+        let direction = "right";
+
+        function drawSnake() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#4CAF50";
+
+            snake.forEach(segment => {
+                ctx.fillRect(segment.x, segment.y, blockSize, blockSize);
+            });
+
+            ctx.fillStyle = "#FF0000";
+            ctx.fillRect(food.x, food.y, blockSize, blockSize);
+        }
+
+        function moveSnake() {
+            const head = { ...snake[0] };
+
+            switch (direction) {
+                case "up":
+                    head.y -= blockSize;
+                    break;
+                case "down":
+                    head.y += blockSize;
+                    break;
+                case "left":
+                    head.x -= blockSize;
+                    break;
+                case "right":
+                    head.x += blockSize;
+                    break;
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                generateFood();
+                alert("Denis");
+                setTimeout(() => {}, 1000); // Поддерживает визуальный эффект
+            } else {
+                snake.pop();
+            }
+        }
+
+        function generateFood() {
+            const maxX = (canvas.width / blockSize) - 1;
+            const maxY = (canvas.height / blockSize) - 1;
+
+            food = {
+                x: blockSize * Math.floor(Math.random() * maxX),
+                y: blockSize * Math.floor(Math.random() * maxY)
+            };
+        }
+
+        function changeDirection(event) {
+            const key = event.key;
+
+            if (key === "ArrowUp" && direction !== "down") {
+                direction = "up";
+            } else if (key === "ArrowDown" && direction !== "up") {
+                direction = "down";
+            } else if (key === "ArrowLeft" && direction !== "right") {
+                direction = "left";
+            } else if (key === "ArrowRight" && direction !== "left") {
+                direction = "right";
+            }
+        }
+
+        function gameLoop() {
+            moveSnake();
+            drawSnake();
+        }
+
+        generateFood();
+        window.addEventListener("keydown", changeDirection);
+        setInterval(gameLoop, 100);
+    </script>
+</body>
+</html>
